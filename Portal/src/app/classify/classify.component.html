@@ -1,0 +1,121 @@
+<app-loading [condition]="isLoading"></app-loading>
+
+<app-toast [message]="toast.message"></app-toast>
+
+<div class="card" *ngIf="!isEditing">
+  <h4 class="card-header">Adicione um novo classificador:</h4>
+  <div class="card-block">
+    <form class="form-inline" [formGroup]="addClassifyForm" (ngSubmit)="addClassify()" style="text-align:center">
+      <div class="form-group">
+        <input class="form-control" type="text" name="classifyName" formControlName="classifyName" placeholder="Novo classificador...">
+        <input class="form-control" type="text" name="desClassify" formControlName="desClassify" placeholder="Descrição do classificador...">
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="!addClassifyForm.valid"><i class="fa fa-floppy-o"></i> Adicionar</button>
+    </form>
+  </div>
+</div>
+
+<div class="card" *ngIf="!isLoading">
+  <h4 class="card-header">Classificadores atuais ({{classifies.length}})</h4>
+  <div class="card-block">
+    <table class="table table-bordered table-striped">
+      <tbody *ngIf="classify.length === 0">
+        <tr>
+          <td colspan="4">Não existe classificadores cadastradas. Adicione um novo acima.</td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="isEditing">
+        <tr>
+          <td colspan="4">
+            <form class="form-inline" #form="ngForm" (ngSubmit)="editClassify(classify)" style="display:inline">
+              <div class="form-group">
+                <input class="form-control" type="text" name="classifyName" [(ngModel)]="classify.classifyName" placeholder="Editar classificador..."
+                  required>
+                <input class="form-control" type="text" name="desClassify" [(ngModel)]="classify.desClassify" placeholder="Descrição do classificador..."
+                  required>
+              </div>
+              <button class="btn btn-sm btn-primary" type="submit" [disabled]="!form.form.valid"><i class="fa fa-floppy-o"></i> Salvar</button>
+            </form>
+            <button class="btn btn-sm btn-warning" (click)="cancelEditing()"><i class="fa fa-times"></i> Cancelar</button>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="!isEditing">
+        <div class="card-block">
+          <div class="row">
+            <div class="col-sm-6" *ngFor="let classify of classifies">
+              <div class="card">
+                <div class="card-block">
+                  <h3 class="card-title">{{classify.classifyName}}</h3>
+                  <p class="card-text">Data: {{classify.dtInsert | date : 'dd/MM/yyyy' }}</p>
+                  <p class="card-text">{{classify.desClassify}}</p>
+                  <button class="btn btn-sm btn-warning" (click)="enableEditing(classify)"><i class="fa fa-pencil"></i></button>
+                  <button class="btn btn-sm btn-danger" (click)="deleteClassify(classify)"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                  <button class="btn btn-sm btn-success" (click)="goToIntents(classify)"><i class="fa fa-arrow-circle-right"></i> Intenções</button>
+                  <button class="btn btn-sm btn-success" (click)="enableModal(classify)" data-toggle="modal" data-target="#modalKeys"><i class="fa fa-eye"></i> Token</button>
+                  <button class="btn btn-sm btn-warning" [disabled]="isTraining" (click)="getTrainByToken(classify.classifyToken)">
+                    <i class="fa fa-android" *ngIf="!isTraining"> Treinar modelo</i>
+                    <i class="fa fa-android" *ngIf="isTraining"> Em treinamento</i>
+                  </button>
+                  <button class="btn btn-sm btn-success" (click)="enableModalTrained(classify)" data-toggle="modal" data-target="#modalTrained"><i class="fa fa-eye"></i> Testar modelo</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Token -->
+<div class="modal fade" id="modalKeys" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Classificador: {{ modalClassify.classifyName }}</h5>
+      </div>
+      <div class="modal-body">
+        <b>Token:</b> {{ modalClassify.classifyToken }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Teste Modelo Treinado -->
+<div class="modal fade" id="modalTrained" tabindex="-1" role="dialog" aria-labelledby="modalTrained" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Classificador: {{ modalClassify.classifyName }}</h5>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <h4 class="card-header">Teste o modelo de dados treinado:</h4>
+          <div class="card-block">
+            <form class="form-inline" [formGroup]="getIntentForm" (ngSubmit)="getIntent()" style="text-align:center">
+              <div class="form-group">
+                <input class="form-control" type="text" name="desSentence" formControlName="desSentence" placeholder="Sentença...">
+       
+              </div>
+              <button class="btn btn-primary" type="submit" [disabled]="!getIntentForm.valid"><i class="fa fa-floppy-o"></i> Enviar</button>
+            </form>
+          </div>
+          <div *ngFor="let desIntent of desIntents.results">
+              <ul>
+                <li>Class: {{ desIntent.class }} - Score: {{ desIntent.score }}</li>
+              </ul>
+          </div>    
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+          </div>
+      </div>      
+    </div>
+  </div>
+  
+</div>
+

@@ -1,0 +1,37 @@
+<div *ngIf="!isEditing">
+  <div class="card-block">
+    <form [formGroup]="addSentenceForm" (ngSubmit)="addSentence(intentId)" style="text-align:center">
+    <div class="form-group">
+        <input class="form-control" type="text" name="desSentence" formControlName="desSentence" placeholder="Nova sentença...">
+    </div>
+    <!--<button class="btn btn-primary" type="submit" [disabled]="!addSentenceForm.valid"><i class="fa fa-floppy-o"></i> Adicionar</button>-->
+    </form>
+  </div>
+</div>
+<div>
+<table class="table table-bordered table-striped">
+  <tbody *ngIf="!isEditing">
+    <tr  *ngFor="let sentence of sentences">
+      <td>{{sentence.desSentence}}</td>
+      <td>{{sentence.dtInsert | date : 'dd/MM/yyyy' }}</td>
+      <td>
+        <button class="btn btn-sm btn-warning" (click)="enableEditing(sentence)"><i class="fa fa-pencil"></i> Editar</button> 
+        <button class="btn btn-sm btn-danger" (click)="deleteSentence(sentence)"><i class="fa fa-trash"></i> Excluir</button>
+      </td>
+    </tr>
+  </tbody>
+  <tbody *ngIf="isEditing">
+    <tr>
+      <td colspan="4">
+        <form  #form="ngForm" (ngSubmit)="editSentence(sentence)" style="display:inline">
+          <div class="form-group">
+              <input class="form-control" type="text" name="desSentence" [(ngModel)]="sentence.desSentence" placeholder="Editar sentença..." required>
+          </div>
+          <button class="btn btn-sm btn-primary" type="submit" [disabled]="!form.form.valid"><i class="fa fa-floppy-o"></i> Salvar</button>
+        </form>
+        <button class="btn btn-sm btn-warning" (click)="cancelEditing()"><i class="fa fa-times"></i> Cancelar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>          
+</div>

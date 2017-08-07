@@ -1,0 +1,16 @@
+.modal {
+  word-wrap: break-word; // Force long display names to break  
+}
+
+[contentEditable=true]:empty:not(:focus):before{
+  content:attr(place-text);
+  color:grey;
+  min-height:8em;
+  background:linear-gradient(45deg, transparent 95%, black 95%) 0 -0.2em white;
+  background-size:0.25em 1.2em;
+}
+.sublinhado {
+  border-bottom-color: transparent;
+  cursor: pointer;
+  text-align: left;
+}

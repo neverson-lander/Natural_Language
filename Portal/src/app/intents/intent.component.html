@@ -1,0 +1,74 @@
+<div *ngIf="classifyService.classifyIn">
+  <app-loading [condition]="isLoading"></app-loading>
+  <app-toast [message]="toast.message"></app-toast>
+
+  <div class="card" *ngIf="!isEditing">
+    <h4 class="card-header">Adicione uma nova intenção:</h4>
+    <div class="card-block">
+      <form [formGroup]="addIntentForm" (ngSubmit)="addIntent()" style="text-align:center">
+        <div class="form-group">
+            <input class="form-control" type="text" name="intentName" formControlName="intentName" placeholder="Nova intenção...">
+        </div>
+        <!--<button class="btn btn-primary" type="submit" [disabled]="!addIntentForm.valid"><i class="fa fa-floppy-o"></i> Adicionar</button>-->
+      </form>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="!isLoading">
+    <h4 class="card-header">Intenções atuais ({{intents.length}})</h4>
+    <div class="card-block">
+      <table class="table table-bordered table-striped">
+        
+        <tbody *ngIf="intents.length === 0">
+          <tr>
+            <td colspan="4">Não existe intenções cadastradas. Adicione uma nova abaixo.</td>
+          </tr>  
+        </tbody>
+        <tbody *ngIf="!isEditing">
+            <div *ngFor='let intent of intents'>
+              <div class="card">
+                <div class="card-header" role="tab" id="headingOne">
+                  <h5 class="mb-0">
+                    <button class="btn btn-sm btn-warning" (click)="enableEditing(intent)"><i class="fa fa-pencil"></i></button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteIntent(intent)"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                    <a class="intent" data-toggle="collapse" data-parent="#accordion" href="#div{{ intent._id }}" aria-expanded="true" aria-controls="collapseOne">
+                      {{ intent.intentName }}
+                    </a>
+                  </h5>
+                </div>
+                <div id="div{{ intent._id }}" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                  <div class="card-block">
+                    <div>
+                        <sentence [intentId]="intent._id"></sentence>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </tbody>
+        <tbody *ngIf="isEditing">
+          <tr>
+            <td colspan="4">
+              <form class="form-inline" #form="ngForm" (ngSubmit)="editIntent(intent)" style="display:inline">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="intentName" [(ngModel)]="intent.intentName" placeholder="Editar intenção..." required>
+                </div>
+                <button class="btn btn-sm btn-primary" type="submit" [disabled]="!form.form.valid"><i class="fa fa-floppy-o"></i> Salvar</button>
+              </form>
+              <button class="btn btn-sm btn-warning" (click)="cancelEditing()"><i class="fa fa-times"></i> Cancelar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="card" *ngIf="!classifyService.classifyIn">
+  <table class="table table-bordered table-striped">
+    <tbody>
+      <tr>
+        <td colspan="4">Selecione um classificador para treinamento.</td>
+      </tr>  
+    </tbody>
+    </table>
+</div>
