@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # use natural language toolkit
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
